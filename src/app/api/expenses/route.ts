@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
@@ -31,16 +31,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Amount, categoryId, and date are required fields.' }, { status: 400 });
     }
 
-    const data: any = {
+    const data: Prisma.ExpenseCreateInput = {
       amount: parseFloat(amount),
       description: description || null,
-      categoryId: parseInt(categoryId),
+      category: { connect: { id: parseInt(categoryId) } },
       date: new Date(`${date}T00:00:00`),
+      billingPeriod: billingPeriodId ? { connect: { id: parseInt(billingPeriodId) } } : undefined,
     };
-
-    if (billingPeriodId) {
-      data.billingPeriodId = parseInt(billingPeriodId);
-    }
 
     const expense = await prisma.expense.create({
       data,

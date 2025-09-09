@@ -1,7 +1,14 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Expense } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
+
+interface WeeklySummary {
+  total: number;
+  weekLabel: string;
+  expenses: Expense[];
+  weekStart: Date;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -47,7 +54,7 @@ export async function GET(request: NextRequest) {
     });
 
     // 3. Group expenses by week
-    const weeklyTotals: { [key: string]: { total: number; weekLabel: string; expenses: any[]; weekStart: Date } } = {};
+    const weeklyTotals: { [key: string]: WeeklySummary } = {};
     const periodStart = new Date(billingPeriod.startDate);
     const periodEnd = new Date(billingPeriod.endDate);
 
@@ -86,7 +93,7 @@ export async function GET(request: NextRequest) {
       weeklyTotals[weekKey].expenses.push(expense);
     }
 
-    const summary = Object.values(weeklyTotals).sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime());
+    const summary: WeeklySummary[] = Object.values(weeklyTotals).sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime());
 
     return NextResponse.json({
       periodName: billingPeriod.name,

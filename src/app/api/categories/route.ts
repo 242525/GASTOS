@@ -25,9 +25,9 @@ export async function POST(request: Request) {
       },
     });
     return NextResponse.json(category, { status: 201 });
-  } catch (error) {
+  } catch (error: unknown) {
     // Handle potential unique constraint violation
-    if (error instanceof Error && 'code' in error && (error as any).code === 'P2002') {
+    if (error instanceof Error && 'code' in error && (error as { code: string }).code === 'P2002') {
       return NextResponse.json({ error: 'Category already exists' }, { status: 409 });
     }
     return NextResponse.json({ error: 'Error creating category' }, { status: 500 });

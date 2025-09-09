@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
@@ -33,12 +33,12 @@ export async function PUT(
     console.log('Request body:', body);
     const { amount, description, categoryId, date, billingPeriodId } = body;
     
-    const data: any = {
+    const data: Prisma.ExpenseUpdateInput = {
       amount: parseFloat(amount),
       description: description || null,
-      categoryId: parseInt(categoryId),
+      category: { connect: { id: parseInt(categoryId) } },
       date: new Date(`${date}T00:00:00`), // Keep consistent with POST
-      billingPeriodId: billingPeriodId ? parseInt(billingPeriodId) : null,
+      billingPeriod: billingPeriodId ? { connect: { id: parseInt(billingPeriodId) } } : undefined,
     };
 
     const updatedExpense = await prisma.expense.update({

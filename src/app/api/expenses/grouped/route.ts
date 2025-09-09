@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Expense } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
@@ -24,7 +24,7 @@ export async function GET() {
 
     // 2. Group expenses by week within each period
     const formattedPeriods = billingPeriods.map(period => {
-      const weeklyTotals: { [key: string]: { weekLabel: string; weekStart: Date; expenses: any[] } } = {};
+      const weeklyTotals: { [key: string]: { weekLabel: string; weekStart: Date; expenses: Expense[] } } = {};
       const periodStart = new Date(period.startDate);
       const periodEnd = new Date(period.endDate);
 
