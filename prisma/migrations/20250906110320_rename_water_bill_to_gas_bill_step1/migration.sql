@@ -1,0 +1,1 @@
+ALTER TABLE "BillingPeriod" RENAME COLUMN "defaultWaterBill" TO "defaultGasBill";
